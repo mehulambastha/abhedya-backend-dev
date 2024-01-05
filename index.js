@@ -11,8 +11,9 @@ connection()
 
 const PORT = process.env.PORT || 5002;
 
-app.use("/", require("./routes/homeRoutes"))
+
 app.use("/user/", require("./routes/userRoutes"))
+app.use("/login/", require("./routes/loginRoute"))
 
 app.listen(PORT, () =>{
   console.log('Listening on port: ', PORT)

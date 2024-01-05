@@ -11,20 +11,13 @@ const UserSchema = mongoose.Schema({
     unique: true,
     required: [true, 'Enter a email!']    
   },
-  password: {
-    type: String,
-    unique: false,
-    required: [true, 'Enter a password!']
-  },
   currentLevel: {
     type: Number,
-    unique: false,
-    required: [false, 'Current level unavailable']
+    unique: false
   },
   points: {
     type: Number,
-    unique: false,
-    required: [false, 'Give points']
+    unique: false
   },
   timeCompletedInSeconds: {
     type: Array,
