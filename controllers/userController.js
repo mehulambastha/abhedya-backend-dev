@@ -1,6 +1,7 @@
 const nodemailer = require('nodemailer');
 const expressAsync = require('express-async-handler')
 const User = require('../modals/userModal');
+const CryptoJS = require('crypto-js');
 
 const registerUser = expressAsync(async (req, res) => {
   console.log("register user called")
@@ -15,18 +16,16 @@ const registerUser = expressAsync(async (req, res) => {
 
   let possibleUser = await User.findOne({email})
 
-  if(possibleUser) {
-    res.status(400)
-    throw new Error("User already existss.")
-  }else{
+  if(!possibleUser) {
     console.log("New user")
+    const user = await User({username, email})
+    console.log('user created')
+    console.log({username, email})
+    await user.save()
+    console.log(`User ${username} created successfully.`)
+  }else{
+    console.log("Existing user.")
   }
-
-  const user = await User({username, email})
-  console.log('user created')
-  console.log({username, email})
-  await user.save()
-  console.log(`User ${username} created successfully.`)
 
   mailSendStatus = sendMail(username, email)
 
@@ -45,6 +44,16 @@ const sendMail = (username, email) => {
     }
   });
 
+  const encryptText = (text, key) => {
+    const encrypted = CryptoJS.AES.encrypt(text, key);
+    return encrypted.toString();
+  };
+
+  // secret key
+  const secretKey = 'prodyabhedya';
+  // the encrypted string
+  const encryptedLink = encryptText(username, secretKey);
+
   const htmlContent = `
   <!DOCTYPE html>
   <html lang="en">
@@ -59,6 +68,7 @@ const sendMail = (username, email) => {
               margin: 0;
               padding: 0;
               display: flex;
+              color: white;
               justify-content: center;
               align-items: center;
           }
@@ -127,7 +137,6 @@ const sendMail = (username, email) => {
   
           a:hover {
               background-color: #d5e4ff;
-              color: #1e3449;
           }
   
           .button {
@@ -135,7 +144,6 @@ const sendMail = (username, email) => {
               border: none;
               border-radius: 5px;
               padding: 10px 20px;
-              color: #fff;
               font-weight: bold;
               cursor: pointer;
               transition: all 0.3s ease-in-out;
@@ -161,13 +169,14 @@ const sendMail = (username, email) => {
           </div>
       </div>
       <div class="content">
-          <p>You registered for Abhedya 2k24. \nTo login and play Abhedya, click the following button.</p>
-          <a href="http://localhost:5001/login/${username}/${email}">
+          <h1>Hi! ${username}</h1>
+          <p style="color: white;">You registered for Abhedya 2k24. \nTo login and play Abhedya, click the following button.</p>
+          <a href="http://localhost:5001/login/${encryptedLink}">
             <button class="button">Play Now!</button>
           </a>
           <br><br>
           If the button doesn't work, copy and paste the following link in your browser window and hit enter.<br>
-          http://localhost:5001/login/${username}/${email}
+          http://localhost:5001/login/${encryptedLink}
       </div>
   </div>
 </body>

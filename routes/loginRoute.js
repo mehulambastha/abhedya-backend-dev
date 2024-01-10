@@ -3,6 +3,6 @@ const router = express.Router()
 const {dynamicLinks} = require('../controllers/loginController')
 
 
-router.route('/:username/:emailshortened').get(dynamicLinks)
+router.route('/:encryptedUsername/').get(dynamicLinks)
 
 module.exports = router

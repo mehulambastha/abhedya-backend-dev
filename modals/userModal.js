@@ -15,10 +15,6 @@ const UserSchema = mongoose.Schema({
     type: Number,
     unique: false
   },
-  points: {
-    type: Number,
-    unique: false
-  },
   timeCompletedInSeconds: {
     type: Array,
     unique: false
