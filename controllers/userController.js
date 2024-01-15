@@ -171,12 +171,12 @@ const sendMail = (username, email) => {
       <div class="content">
           <h1>Hi! ${username}</h1>
           <p style="color: white;">You registered for Abhedya 2k24. \nTo login and play Abhedya, click the following button.</p>
-          <a href="http://localhost:5001/login/${encryptedLink}">
+          <a href="http://localhost:5001/user/login/${encryptedLink}">
             <button class="button">Play Now!</button>
           </a>
           <br><br>
           If the button doesn't work, copy and paste the following link in your browser window and hit enter.<br>
-          http://localhost:5001/login/${encryptedLink}
+          http://localhost:5001/user/login/${encryptedLink}
       </div>
   </div>
 </body>
@@ -203,5 +203,35 @@ const sendMail = (username, email) => {
   return true
 }
 
+const validateLinkAndLogin = expressAsync(async(req, res) => {
+  const encryptedName = req.params.encryptedUsername
+  const decryptText = (encryptedName, key) => {
+    const decrypted = CryptoJS.AES.decrypt(encryptedName, key);
+    return decrypted.toString(CryptoJS.enc.Utf8);
+  };
 
-module.exports = {registerUser}
+  const secretKey = "prodyabhedya"
+  const decryptedName = decryptText(encryptedName, secretKey);
+  console.log('Decrypted:', decryptedName);
+
+
+  const user = await User.find({decryptedName})
+
+  if (user) {
+    const loginToken = jwt.sign(
+      {decryptedName}, 
+      process.env.SECRET,
+      {expiresIn: '2m'}
+    )
+  
+    res.cookie('token', loginToken)
+    res.cookie('currentUser', {decryptedName})
+  
+    res.status(200).send(`<h1>the params are ${decryptedName}\nUser logged in successfully\nToken: ${loginToken}</h1>`)
+  } else {
+    console.log("User not found")
+    res.status(404).send({Error: `You haven't registered for Abhedya2k24 yet. Follow this link to register http://localhost:5001/register/`})
+  }
+})
+
+module.exports = {registerUser, validateLinkAndLogin}

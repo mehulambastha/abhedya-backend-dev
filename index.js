@@ -13,7 +13,7 @@ const PORT = process.env.PORT || 5002;
 
 
 app.use("/user/", require("./routes/userRoutes"))
-app.use("/login/", require("./routes/loginRoute"))
+app.use("/play/", require("./routes/playRoute"))
 
 app.listen(PORT, () =>{
   console.log('Listening on port: ', PORT)
