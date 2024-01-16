@@ -57,9 +57,9 @@ const validateLinkAndLogin = expressAsync(async(req, res) => {
       {expiresIn: '2m'}
     )
   
-    res.cookie('token', loginToken)
-    console.log("cookie set as: ", loginToken)
-    console.log("set as req: ", req.cookies.token)
+    res.cookie('token', loginToken, {path: "/"})
+    req.session.token = loginToken
+    console.log("cookie set as: ", req.cookies.token)
     res.status(200).send(`<h1>the params are ${decryptedName}\nUser logged in successfully\nToken: ${loginToken}</h1>`)
   } else {
     console.log("User not found")

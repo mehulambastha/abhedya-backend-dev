@@ -2,9 +2,15 @@ const express = require('express');
 const dotenv = require('dotenv');
 const connection = require('./database/connection');
 const cookieParser = require('cookie-parser');
+const session = require("express-session")
 
 const app = express();
 app.use(cookieParser());
+app.use(session({
+  secret: "ABD2k24",
+  resave: false,
+  saveUninitialized: true
+}))
 app.use(express.json());
 dotenv.config()
 connection()

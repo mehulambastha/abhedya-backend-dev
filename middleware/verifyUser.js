@@ -1,13 +1,14 @@
 const expressAsync = require("express-async-handler")
 const jwt = require("jsonwebtoken")
 
-const verifyUser = expressAsync((req, res, next) => {
-  let user = ''
+const verifyUser = expressAsync(async(req, res, next) => {
+  console.log("verifying user...")
+  console.log("all cookies: ", req.cookies)
+  const token = req.cookies.token
   try{
-    token = req.cookies.token
     console.log("loginToken found: ", token)
   }catch(e){
-    console.log(e.message)
+    console.log("token not found", e.message)
   }
 
   // If token recieved
