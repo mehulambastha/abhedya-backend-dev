@@ -4,8 +4,8 @@ const connection = require('./database/connection');
 const cookieParser = require('cookie-parser');
 
 const app = express();
-app.use(express.json());
 app.use(cookieParser());
+app.use(express.json());
 dotenv.config()
 connection()
 

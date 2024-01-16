@@ -4,8 +4,8 @@ const User = require("../modals/userModal")
 
 const fetchQuestion = expressAsync(async(req, res) => {
   const {questionLevelRequested} = req.body
-
   const question = await Question.find({level: questionLevelRequested})
+  console.log(`question level ${questionLevelRequested} is \n ${question}`)
 
 })
 const submitAnswer = expressAsync(async(req, res) => {
@@ -26,11 +26,11 @@ const insertSampleData = expressAsync(async(req, res) => {
   console.log('recieved data')
 
 
-  for (const [index, value] of data.entries()) {
-    const question = new Question(value)
-    await question.save()
-    console.log("saved question no.", index+1)
-  }
+  // for (const [index, value] of data.entries()) {
+  //   const question = new Question(value)
+  //   await question.save()
+  //   console.log("saved question no.", index+1)
+  // }
   res.status(200).json({sucess: "something"})
 
 })

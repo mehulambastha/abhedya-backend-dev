@@ -2,6 +2,8 @@ const nodemailer = require('nodemailer');
 const expressAsync = require('express-async-handler')
 const User = require('../modals/userModal');
 const CryptoJS = require('crypto-js');
+const base64url = require('base64url');
+const jwt = require('jsonwebtoken');
 
 const registerUser = expressAsync(async (req, res) => {
   console.log("register user called")
@@ -33,6 +35,39 @@ const registerUser = expressAsync(async (req, res) => {
 
 })
 
+const validateLinkAndLogin = expressAsync(async(req, res) => {
+  console.log("login asked for user", req.params.encryptedUsername)
+  const encryptedName = base64url.decode(req.params.encryptedUsername)
+  const decryptText = (encryptedName, key) => {
+    const decrypted = CryptoJS.AES.decrypt(encryptedName, key);
+    return decrypted.toString(CryptoJS.enc.Utf8);
+  };
+
+  const secretKey = "prodyabhedya"
+  const decryptedName = decryptText(encryptedName, secretKey);
+  console.log('Decrypted:', decryptedName);
+
+
+  const user = await User.find({decryptedName})
+
+  if (user) {
+    const loginToken = jwt.sign(
+      {decryptedName}, 
+      process.env.SECRET,
+      {expiresIn: '2m'}
+    )
+  
+    res.cookie('token', loginToken)
+    console.log("cookie set as: ", loginToken)
+    console.log("set as req: ", req.cookies.token)
+    res.status(200).send(`<h1>the params are ${decryptedName}\nUser logged in successfully\nToken: ${loginToken}</h1>`)
+  } else {
+    console.log("User not found")
+    res.status(404).send({Error: `You haven't registered for Abhedya2k24 yet. Follow this link to register http://localhost:5001/user/register/`})
+  }
+})
+
+
 const sendMail = (username, email) => {
   console.log('Data in sendMail function: ', username, email)
   // Configure Nodemailer transporter
@@ -52,7 +87,7 @@ const sendMail = (username, email) => {
   // secret key
   const secretKey = 'prodyabhedya';
   // the encrypted string
-  const encryptedLink = encryptText(username, secretKey);
+  const encryptedLink = base64url(encryptText(username, secretKey))
 
   const htmlContent = `
   <!DOCTYPE html>
@@ -202,36 +237,5 @@ const sendMail = (username, email) => {
 
   return true
 }
-
-const validateLinkAndLogin = expressAsync(async(req, res) => {
-  const encryptedName = req.params.encryptedUsername
-  const decryptText = (encryptedName, key) => {
-    const decrypted = CryptoJS.AES.decrypt(encryptedName, key);
-    return decrypted.toString(CryptoJS.enc.Utf8);
-  };
-
-  const secretKey = "prodyabhedya"
-  const decryptedName = decryptText(encryptedName, secretKey);
-  console.log('Decrypted:', decryptedName);
-
-
-  const user = await User.find({decryptedName})
-
-  if (user) {
-    const loginToken = jwt.sign(
-      {decryptedName}, 
-      process.env.SECRET,
-      {expiresIn: '2m'}
-    )
-  
-    res.cookie('token', loginToken)
-    res.cookie('currentUser', {decryptedName})
-  
-    res.status(200).send(`<h1>the params are ${decryptedName}\nUser logged in successfully\nToken: ${loginToken}</h1>`)
-  } else {
-    console.log("User not found")
-    res.status(404).send({Error: `You haven't registered for Abhedya2k24 yet. Follow this link to register http://localhost:5001/register/`})
-  }
-})
 
 module.exports = {registerUser, validateLinkAndLogin}
