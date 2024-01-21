@@ -3,8 +3,17 @@ const dotenv = require('dotenv');
 const connection = require('./database/connection');
 const cookieParser = require('cookie-parser');
 const session = require("express-session")
+const cors = require('cors');
+
+const corsOptions = {
+  origin: 'http://localhost:3000',
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  credentials: true,
+  optionsSuccessStatus: 204,
+};
 
 const app = express();
+app.use(cors(corsOptions));
 app.use(cookieParser());
 app.use(session({
   secret: "ABD2k24",

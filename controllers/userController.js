@@ -31,7 +31,12 @@ const registerUser = expressAsync(async (req, res) => {
 
   mailSendStatus = sendMail(username, email)
 
-  mailSendStatus ? res.status(200).json({Success: "Registered and login link sent successfully through email"}) : res.status(400).json({Error: "Couldn't send mail. Registered however."})
+  if (mailSendStatus) {
+    res.status(200).json({msg: "success"})
+    console.log("Email sent successfully")
+  } else{
+    res.status(400).json({Error: "Couldn't send mail. Registered however."})
+  }
 
 })
 
@@ -54,16 +59,12 @@ const validateLinkAndLogin = expressAsync(async(req, res) => {
     const loginToken = jwt.sign(
       {decryptedName}, 
       process.env.SECRET,
-      {expiresIn: '2m'}
     )
-  
-    res.cookie('token', loginToken, {path: "/"})
-    req.session.token = loginToken
-    console.log("cookie set as: ", req.cookies.token)
-    res.status(200).send(`<h1>the params are ${decryptedName}\nUser logged in successfully\nToken: ${loginToken}</h1>`)
+
+    res.status(200).json({loginToken})
   } else {
     console.log("User not found")
-    res.status(404).send({Error: `You haven't registered for Abhedya2k24 yet. Follow this link to register http://localhost:5001/user/register/`})
+    res.status(404).json({Error: `You haven't registered for Abhedya2k24 yet. Follow this link to register http://localhost:5001/user/register/`})
   }
 })
 
@@ -206,12 +207,12 @@ const sendMail = (username, email) => {
       <div class="content">
           <h1>Hi! ${username}</h1>
           <p style="color: white;">You registered for Abhedya 2k24. \nTo login and play Abhedya, click the following button.</p>
-          <a href="http://localhost:5001/user/login/${encryptedLink}">
+          <a href="http://localhost:3000/user/login/${encryptedLink}">
             <button class="button">Play Now!</button>
           </a>
           <br><br>
           If the button doesn't work, copy and paste the following link in your browser window and hit enter.<br>
-          http://localhost:5001/user/login/${encryptedLink}
+          http://localhost:3000/user/login/${encryptedLink}
       </div>
   </div>
 </body>

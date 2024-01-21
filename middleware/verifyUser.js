@@ -3,8 +3,7 @@ const jwt = require("jsonwebtoken")
 
 const verifyUser = expressAsync(async(req, res, next) => {
   console.log("verifying user...")
-  console.log("all cookies: ", req.cookies)
-  const token = req.cookies.token
+  const {token} = req.body
   try{
     console.log("loginToken found: ", token)
   }catch(e){
@@ -21,6 +20,7 @@ const verifyUser = expressAsync(async(req, res, next) => {
       console.log("JWT Verified successfully!")
       console.log("Decoded Data: ", decoded)
       console.log("verification completed. Moving on...")
+      res.locals.decoded = decoded
       next()
     }
   })

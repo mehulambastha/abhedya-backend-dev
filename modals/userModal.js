@@ -11,9 +11,15 @@ const UserSchema = mongoose.Schema({
     unique: true,
     required: [true, 'Enter a email!']    
   },
-  currentLevel: {
+  currentLevelInt: {
     type: Number,
-    unique: false
+    unique: false,
+    default: 1
+  },
+  levelsCompleted: {
+    type: Array,
+    unique: false,
+    default: [0]
   },
   timeCompletedInSeconds: {
     type: Array,
