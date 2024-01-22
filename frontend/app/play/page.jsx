@@ -4,8 +4,8 @@ import axios from 'axios';
 
 
 const page = () => {
-  const [questionSet, setQuestionSet] = useState(null)
-  const [userAnswer, setUserAnswer] = useState(null)
+  const [currentQuestion, setCurrentQuestion] = useState(null)
+  const [userAnswer, setUserAnswer] = useState("")
 
   useEffect(() => {
     const fetchData = async() => {
@@ -14,7 +14,7 @@ const page = () => {
             "token": localStorage.getItem("loginToken")
           });
           const questionReturnedFromBackend = response.data.question;
-          setQuestionSet(questionReturnedFromBackend);
+          setCurrentQuestion(questionReturnedFromBackend);
         } catch (error) {
           console.log("Macho error: ", error);
         } 
@@ -25,23 +25,32 @@ const page = () => {
 
   const handleAnswerSubmit = async (e) => {
     e.preventDefault()
-    alert("Your answer: ", userAnswer)
     await axios.post("http://localhost:5001/play/submit", {
       "token": localStorage.getItem("loginToken"),
       "userAnswer": userAnswer
     })
-      .then((response) => {
-        alert("response is: ", response.success)
-      })    
+    .then((response) => {
+        setCurrentQuestion(null)
+        setUserAnswer("")
+        if(response.status === 200) {
+          alert("Correct Answer!")
+          setCurrentQuestion(response.data)
+        }else{
+          alert("Incorrect! Try again.")
+        }
+      })  
+      .catch((err) => {
+        alert("Fetching Error", err)
+      })  
   }
 
   return (
     <div>
-      {questionSet ? (
+      {currentQuestion ? (
         <div>
-          <p>Level {questionSet.level}<sup>{questionSet.questionId}</sup></p>
-          <p> {questionSet.questionTitle}</p>
-          <p>{questionSet.questionBody}</p>
+          <p>Level {currentQuestion.level}<sup>{currentQuestion.questionId}</sup></p>
+          <p> {currentQuestion.questionTitle}</p>
+          <p>{currentQuestion.questionBody}</p>
         </div>
       ) : (
         <p>Loading question...</p>
@@ -49,7 +58,9 @@ const page = () => {
       <input type='text' placeholder='your answer...' className='p-2 m-4 border-2 border-black text-black bg-gray-100' 
       onChange={(e)=>{
         setUserAnswer(e.target.value)
-      }}/>
+      }}
+      value={userAnswer}
+      />
       <button onClick={handleAnswerSubmit} className='bg-gray-200 p-1 m-4 rounded-xl border01 border-black'>Submit</button>
     </div>
   )

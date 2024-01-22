@@ -27,18 +27,26 @@ const submitAnswer = expressAsync(async(req, res, next) => {
   
   if (userAnswer !== question.correctAnswer) {
     console.log("Wrong Answer! Try again.")
-    res.status(400).send("Error wrong answer") 
-  }else{      
+    res.status(400).send("Error wrong answer")
+  }else{  
+    const nextLevelInt = user.currentLevelInt + 1    
     console.log("Correct Answer! You move on to the next question level")
-    const updatedUser = await User.findByIdAndUpdate(user._id, {currentLevelInt: user.currentLevelInt + 1})
+    const updatedUser = await User.findByIdAndUpdate(user._id, {$set: {currentLevelInt: nextLevelInt}}, {$push: {levelsCompleted: nextLevelInt}})
     console.log("updated user is: ", updatedUser)
-    res.status(200).json({success: "done"})
+
+    // returning the next question back to the UI
+    const nextQuestion = await Question.findOne({level: questionNumber+1})
+    res.status(200).json(nextQuestion ? nextQuestion : question)
     next()
-  }
+  } 
 })
 
 const updateLeaderboard = expressAsync(async(req, res) => {
-  console.log("UPdated Leaderboard")
+  console.log("-------------------------------------------------------Updating Leaderboard--------------------------------\n")
+  const sortedUsers = await User.find().sort({currentLevelInt: -1, timeCompletedInSeconds: 1})
+  res.status(200)
+  console.log("updated leaderboard!")
+  console.log(sortedUsers)
 })
 
 const insertSampleData = expressAsync(async(req, res) => {
