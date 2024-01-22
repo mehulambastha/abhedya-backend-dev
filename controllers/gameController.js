@@ -21,8 +21,8 @@ const fetchQuestion = expressAsync(async(req, res) => {
 const submitAnswer = expressAsync(async(req, res, next) => {
   const username = res.locals.decoded.decryptedName
   const user = await User.findOne({username})
-  const questionNumber = user.currentLevelInt
-  const question = await Question.findOne({level: questionNumber})
+  const currentQuestionNumber = user.currentLevelInt
+  const question = await Question.findOne({level: currentQuestionNumber})
   const {userAnswer} = req.body
   
   if (userAnswer !== question.correctAnswer) {
