@@ -12,8 +12,7 @@ const registerUser = expressAsync(async (req, res) => {
   console.log('Data received: ', username, email)
   
   if (!username || !email) {
-    res.status(400)
-    throw new Error("Incomplete data received.")
+    res.status(400) 
   }
 
   let possibleUser = await User.findOne({email})

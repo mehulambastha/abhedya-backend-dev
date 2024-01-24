@@ -31,11 +31,18 @@ const submitAnswer = expressAsync(async(req, res, next) => {
   }else{  
     const nextLevelInt = user.currentLevelInt + 1    
     console.log("Correct Answer! You move on to the next question level")
-    const updatedUser = await User.findByIdAndUpdate(user._id, {$set: {currentLevelInt: nextLevelInt}}, {$push: {levelsCompleted: nextLevelInt}})
+    const updatedUser = await User.findByIdAndUpdate(
+      user._id,
+      {
+        $set: { currentLevelInt: nextLevelInt },
+        $push: { levelsCompleted: nextLevelInt }
+      },
+      { new: true } // This option returns the modified document rather than the original one
+    );
     console.log("updated user is: ", updatedUser)
 
     // returning the next question back to the UI
-    const nextQuestion = await Question.findOne({level: questionNumber+1})
+    const nextQuestion = await Question.findOne({level: currentQuestionNumber+1})
     res.status(200).json(nextQuestion ? nextQuestion : question)
     next()
   } 

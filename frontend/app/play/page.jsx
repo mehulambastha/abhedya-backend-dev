@@ -45,7 +45,6 @@ const page = () => {
     })
     .then((response) => {
         setCurrentQuestion(null)
-        setUserAnswer("")
         if(response.status === 200) {
           alert("Correct Answer!")
           setCurrentQuestion(response.data)
@@ -57,7 +56,8 @@ const page = () => {
         alert("Incorrect! Try again.")
         setUserAnswer("")
       })  
-  }
+      setUserAnswer("")
+    }
 
   const handleLogOut = async (e) => {
     e.preventDefault()
