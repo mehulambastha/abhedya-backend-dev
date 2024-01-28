@@ -4,12 +4,46 @@ const User = require('../modals/userModal');
 const CryptoJS = require('crypto-js');
 const base64url = require('base64url');
 const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
 
 const superUserController = expressAsync(async (req, res) => {
   console.log("superUserContrller called.")
   const {superusername, supassword} = res.locals.superuserData
   console.log(`name: ${superusername}\npswd: ${supassword}`)
-  res.status(200).json({message: "Super user called"})
+  res.status(200)
+})
+
+// loggin in superuser
+const superUserLogin = expressAsync(async (req, res) => {
+  console.log("login module called.")
+  const { superusername, supassword } = req.body
+
+  console.log("recieved: ", superusername, supassword)
+  const superUserinDb = await User.findOne({type: 0, username: superusername}).lean()
+
+  if (superUserinDb) {
+    console.log("superUserFound")
+    
+    if (await bcrypt.compare(supassword, superUserinDb.password)) {  
+      console.log("password verified\nReturning JWT token...\n", superusername, supassword) 
+      
+      const loginToken = jwt.sign({
+        superuser: true,
+        username: superusername,
+        password: supassword
+      }, process.env.SECRET)
+      
+      res.status(200).send(loginToken)
+      console.log("returned JWT token. User verified.")
+    }else{
+      console.log("wrong password")
+      res.status(401).send("Wrong password!")
+    }
+
+  } else {
+    console.log("super user not found")
+    res.status(404).send("Super user not found")
+  }
 })
 
 // managing users for the superuser profile
@@ -274,4 +308,4 @@ const sendMail = (username, email) => {
   return true
 }
 
-module.exports = {registerUser, validateLinkAndLogin, superUserController, manageUsers}
+module.exports = {registerUser, validateLinkAndLogin, superUserController, manageUsers, superUserLogin}

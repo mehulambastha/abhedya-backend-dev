@@ -71,7 +71,13 @@ const insertSampleData = expressAsync(async(req, res) => {
 })
 
 const manageQuestions = expressAsync(async(req, res) => {
-  console.log("managing questions now...")
+  const levels = await Question.find().lean()
+
+  switch (req.method) {
+    case "GET":
+      console.log("All questions are: ", levels)
+      res.status(200).json({levels: levels})
+  }
 })
 
 module.exports = {fetchQuestion, submitAnswer, updateLeaderboard, insertSampleData, manageQuestions}

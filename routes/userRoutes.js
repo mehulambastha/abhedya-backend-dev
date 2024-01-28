@@ -2,7 +2,7 @@ const express = require('express')
 const router = express.Router()
 
 const {registerUser, validateLinkAndLogin} = require("../controllers/userController")
-const {superUserController, manageUsers} = require("../controllers/userController")
+const {superUserController, manageUsers, superUserLogin} = require("../controllers/userController")
 const {manageQuestions} = require("../controllers/gameController")
 const {verifySuperUser} = require("../middleware/verifySuperUser")
 
@@ -17,6 +17,7 @@ router.route("/register/").get((req, res) => {
 })
 
 router.route("/superuser/").post(verifySuperUser, superUserController)
+router.route("/superuser/login").post(superUserLogin)
 
 // manage user routes
 router.route("/superuser/users/").get(verifySuperUser, manageUsers)
@@ -25,10 +26,10 @@ router.route("/superuser/users/").post(verifySuperUser, manageUsers)
 router.route("/superuser/users/").put(verifySuperUser, manageUsers)
 
 // managing question routes
-router.route("/superuser/questions/").get(verifySuperUser, manageQuestions)
-router.route("/superuser/questions/").post(verifySuperUser, manageQuestions)
-router.route("/superuser/questions/").put(verifySuperUser, manageQuestions)
-router.route("/superuser/questions/").delete(verifySuperUser, manageQuestions)
+router.route("/superuser/levels/").get(verifySuperUser, manageQuestions)
+router.route("/superuser/levels/").post(verifySuperUser, manageQuestions)
+router.route("/superuser/levels/").put(verifySuperUser, manageQuestions)
+router.route("/superuser/levels/").delete(verifySuperUser, manageQuestions)
 
 router.route("/").get((req, res)=> {
   res.status(200).json({msg: "hitting user route."})
