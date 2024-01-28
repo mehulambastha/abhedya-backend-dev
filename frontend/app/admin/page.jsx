@@ -44,7 +44,16 @@ const page = () => {
                 <div className='self-start flex rounded-3xl flex-col items-center min-h-screen w-96 bg-gray-200 text-black'>
                     <div className='bg-blue-200 flex flex-row justify-between items-center self-start mx-auto p-4 my-8 text-black py-5 rounded-xl w-11/12'>
                         <span>Abhedya admin panel</span>
-                        <button className='bg-red-300 p-3 border-black rounded-xl'>Log out</button>
+                        <button 
+                            className='bg-red-300 p-3 border-black rounded-xl' 
+                            onClick={() => {
+                                Cookies.remove("token")
+                                Cookies.set("superUserStatus", false)
+                                setsuperUserLoggedIn(false)
+                            }
+                        }>
+                            Log out
+                        </button>
                     </div>
                     <ul className='bg-blue-200 w-11/12 p-8 rounded-xl flex flex-col gap-10'>
                         <li className={
