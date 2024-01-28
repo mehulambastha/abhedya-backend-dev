@@ -2,6 +2,7 @@
 import React, {useState, useEffect} from 'react';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
+import { headers } from 'next/headers';
 
 const page = () => {
   const router = useRouter()
@@ -17,8 +18,14 @@ const page = () => {
       if (tokenInLocalStorage) {
         try {
           const response = await axios.post("http://localhost:5001/play/", {
-            "token": localStorage.getItem("loginToken")
-          });
+              "token": localStorage.getItem("loginToken")
+            }, 
+            {
+              headers: {
+                "token": localStorage.getItem("loginToken")
+              }
+            }
+          );
 
           if (response.status === 200){
             const questionReturnedFromBackend = response.data.question;

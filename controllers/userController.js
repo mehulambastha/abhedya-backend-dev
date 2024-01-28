@@ -5,6 +5,42 @@ const CryptoJS = require('crypto-js');
 const base64url = require('base64url');
 const jwt = require('jsonwebtoken');
 
+const superUserController = expressAsync(async (req, res) => {
+  console.log("superUserContrller called.")
+  const {superusername, supassword} = res.locals.superuserData
+  console.log(`name: ${superusername}\npswd: ${supassword}`)
+  res.status(200).json({message: "Super user called"})
+})
+
+// managing users for the superuser profile
+const manageUsers = expressAsync(async (req, res) => {
+  switch (req.method) {
+    case 'GET':
+      const users = await User.find()
+      console.log("all users are\n", users)
+      res.status(200).json({users: users})
+      break
+    case 'PUT': 
+      const {updatedUser} = req.body
+      console.log("the updated user you sent is this: ", updatedUser)
+      res.status(200).send(`updated user: ${updatedUser}`)
+      break
+    case "DELETE":
+      const {userToDelete} = req.body
+      console.log("The user to delete is: ", userToDelete)
+      res.status(200).send(`The user to delete is ${userToDelete}`)
+      break
+    case 'POST':
+      const {newUserToAdd} = req.body
+      console.log("Th enew user to add is: ", newUserToAdd)
+      res.status(200).send(`The new user to add is:  ${newUserToAdd}`)
+      break
+    default:
+      res.status(400).send(`Invalid request type`)
+  }
+  console.log("Exiting managin users...")
+})
+
 const registerUser = expressAsync(async (req, res) => {
   console.log("register user called")
   const {username, email} = req.body
@@ -52,7 +88,7 @@ const validateLinkAndLogin = expressAsync(async(req, res) => {
   console.log('Decrypted:', decryptedName);
 
 
-  const user = await User.find({decryptedName})
+  const user = await User.findOne({decryptedName})
 
   if (user) {
     const loginToken = jwt.sign(
@@ -238,4 +274,4 @@ const sendMail = (username, email) => {
   return true
 }
 
-module.exports = {registerUser, validateLinkAndLogin}
+module.exports = {registerUser, validateLinkAndLogin, superUserController, manageUsers}

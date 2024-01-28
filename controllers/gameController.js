@@ -70,4 +70,8 @@ const insertSampleData = expressAsync(async(req, res) => {
 
 })
 
-module.exports = {fetchQuestion, submitAnswer, updateLeaderboard, insertSampleData}
+const manageQuestions = expressAsync(async(req, res) => {
+  console.log("managing questions now...")
+})
+
+module.exports = {fetchQuestion, submitAnswer, updateLeaderboard, insertSampleData, manageQuestions}

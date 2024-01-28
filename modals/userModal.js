@@ -1,6 +1,11 @@
 const mongoose = require('mongoose')
 
 const UserSchema = mongoose.Schema({
+  type: {
+    type: Number,
+    unique: false,
+    default: 1
+  },
   username: {
     type: String,
     unique: true,
@@ -9,7 +14,7 @@ const UserSchema = mongoose.Schema({
   email: {
     type: String,
     unique: true,
-    required: [true, 'Enter a email!']    
+    required: [false, 'Enter a email!']    
   },
   currentLevelInt: {
     type: Number,
