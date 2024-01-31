@@ -29,33 +29,31 @@ const Model = (params) => {
   }
 
 
-  let something = []
+  let tableData = []
 
   switch (params.dataType) {
     case 'users':
       for (const data of dataList) {
         if (data.type == 1) {
-          something.push(
-            <div className='flex flex-row items-center justify-around border-2 border-black w-11/12 mx-auto p-4 py-2 rounded-xl'>
-              <span>{dataList.indexOf(data) + 1}.</span>
-              <span>{data.username}</span>
-            </div>
+          tableData.push(
+            <tr>
+              <td className='p-2 border border-gray-600'>{dataList.indexOf(data) + 1}.</td>
+              <td className='p-2 border border-gray-600'>{data.username}</td>
+              <td className='p-2 border border-gray-600'>{data.currentLevelInt}</td>
+            </tr>
           )
         }
       }
       break
     case 'levels':
       for (const data of dataList) {
-          something.push(
-            <div className='flex flex-row items-center gap-4 justify-around border-2 border-black w-11/12 mx-auto p-4 py-2 rounded-xl'>
-              <span>{data.level}.</span>
-              <span>{data.questionId}</span>
-              <div className='flex flex-col gap-1 w-1/2'>
-                <span className='border-b-black border-2 pb-4'>{data.questionTitle}</span>
-                <span>{data.questionBody}</span>
-              </div>
-              <span>{data.correctAnswer}</span>
-            </div>
+          tableData.push(
+            <tr className=''>
+              <td className='p-2 border border-gray-600'>{data.level}</td>
+              <td className='p-2 border border-gray-600'>{data.questionId}</td>
+              <td className='p-2 border border-gray-600'>{data.questionTitle}</td>
+              <td className='p-2 border border-gray-600'>{data.correctAnswer}</td>
+            </tr>
           )
       }
       break
@@ -70,25 +68,23 @@ const Model = (params) => {
           <button className='w-20 py-2 bg-orange-400 rounded-xl' onClick={() => handleUserAction('modify')}>Modify</button>
           <button className='w-20 py-2 bg-red-600 text-white rounded-xl' onClick={() => handleUserAction('delete')}>Delete</button>
           <button className='w-20 py-2 bg-gray-600 text-white rounded-xl' onClick={() => handleUserAction('')}>Cancel</button>
-
         </div>
-
-
+        
         {/*  the form actions */}
         {
           (()=>{
             switch(userAction) {
               case 'add':
                 return(
-                  <ModifyForm type='add' />
+                  <ModifyForm type='add' dataModal={params.dataType}/>
                 )
               case 'modify':
                 return(
-                  <ModifyForm type='modify' />
+                  <ModifyForm type='modify' dataModal={params.dataType}/>
                 )
               case 'delete':
                 return(
-                  <ModifyForm type='delete' />
+                  <ModifyForm type='delete' dataModal={params.dataType}/>
                 )
               default:
                 return(
@@ -97,8 +93,45 @@ const Model = (params) => {
             }
           })()
         }
+  
       </div>
-      {something}
+      <table className='table-auto w-11/12 m-auto p-2 border border-gray-600 border-collapse'>
+        <thead>
+          <tr>
+            <th className='p-2 border border-gray-600'>
+              {(()=>{
+              if(params.dataType === 'users'){ 
+                return('S.no')
+              }else{
+                return('Level')
+              }
+              })()}
+            </th>
+            <th className='p-2 border border-gray-600'>
+              {(()=>{
+                if(params.dataType === 'users') {
+                  return('Username')
+                } else {
+                  return('Question ID')
+                }
+              })()}
+            </th>
+            <th className='p-2 border border-gray-600'>
+              {(()=>{
+                if(params.dataType === 'users') {
+                  return('Level')
+                } else {
+                  return('Question')
+                }
+              })()}
+            </th>
+            {params.dataType === 'levels' && <th className='p-2 border border-gray-600'>Correct Answer</th>}
+          </tr>
+        </thead>
+        <tbody>
+          {tableData}          
+        </tbody>
+      </table>
     </div>
   )
 

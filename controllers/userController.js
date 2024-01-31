@@ -72,12 +72,12 @@ const manageUsers = expressAsync(async (req, res) => {
     default:
       res.status(400).send(`Invalid request type`)
   }
-  console.log("Exiting managin users...")
+  console.log("Exiting managing users...")
 })
 
 const registerUser = expressAsync(async (req, res) => {
   console.log("register user called")
-  const {username, email} = req.body
+  const {username, email} = req.body    
 
   console.log('Data received: ', username, email)
   

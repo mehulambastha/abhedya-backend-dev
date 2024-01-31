@@ -72,11 +72,24 @@ const insertSampleData = expressAsync(async(req, res) => {
 
 const manageQuestions = expressAsync(async(req, res) => {
   const levels = await Question.find().lean()
-
+  
   switch (req.method) {
     case "GET":
       console.log("All questions are: ", levels)
       res.status(200).json({levels: levels})
+      break
+    case "POST":
+      const data = [req.body]
+      console.log('recieved data', data)
+    
+      for (const [index, value] of data.entries()) {
+        const question = new Question(value)
+        await question.save()
+        console.log("saved question no.", index+1)
+      }
+      res.status(200)
+      break 
+
   }
 })
 
