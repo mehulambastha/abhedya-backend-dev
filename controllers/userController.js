@@ -48,6 +48,9 @@ const superUserLogin = expressAsync(async (req, res) => {
 
 // managing users for the superuser profile
 const manageUsers = expressAsync(async (req, res) => {
+
+  let uniqueIdentifier;
+
   switch (req.method) {
     case 'GET':
       const users = await User.find()
@@ -55,14 +58,31 @@ const manageUsers = expressAsync(async (req, res) => {
       res.status(200).json({users: users})
       break
     case 'PUT': 
-      const {updatedUser} = req.body
-      console.log("the updated user you sent is this: ", updatedUser)
-      res.status(200).send(`updated user: ${updatedUser}`)
+      if (req.body.uniqueIdentifier){
+        uniqueIdentifier = req.body.uniqueIdentifier
+        const {objectifiedData} = req.body
+        console.log("the updated user you sent is this: ", uniqueIdentifier, objectifiedData)
+
+        // finding and replacing the data
+        const existingUser = await User.findOne({username: uniqueIdentifier})
+        console.log("existingUser", existingUser)
+        const updatedUser = await User.findByIdAndUpdate(existingUser._id, objectifiedData, {new: true})
+        console.log('updated ', updatedUser)
+        res.status(200).send(`updated user: ${updatedUser}`)
+      }
       break
     case "DELETE":
-      const {userToDelete} = req.body
-      console.log("The user to delete is: ", userToDelete)
-      res.status(200).send(`The user to delete is ${userToDelete}`)
+      console.log("entered deletion module")
+      if (req.body.uniqueIdentifier){
+        uniqueIdentifier = req.body.uniqueIdentifier
+        console.log("found identifier: ", uniqueIdentifier)
+        console.log("The user to delete is: ", uniqueIdentifier)
+        const user = await User.findOne({username: uniqueIdentifier})
+        const deletedUser = await User.findByIdAndDelete(user._id)
+        res.status(200).send(`The user to delete is ${user}`)
+      } else {
+        console.log("wtf bhai data hi nahi aaya")
+      }
       break
     case 'POST':
       const {newUserToAdd} = req.body

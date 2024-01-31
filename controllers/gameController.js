@@ -59,37 +59,61 @@ const updateLeaderboard = expressAsync(async(req, res) => {
 const insertSampleData = expressAsync(async(req, res) => {
   const data = req.body
   console.log('recieved data')
-
-
+  
+  
   for (const [index, value] of data.entries()) {
     const question = new Question(value)
     await question.save()
     console.log("saved question no.", index+1)
   }
   res.status(200).json({sucess: "something"})
-
+  
 })
 
 const manageQuestions = expressAsync(async(req, res) => {
   const levels = await Question.find().lean()
-  
-  switch (req.method) {
-    case "GET":
-      console.log("All questions are: ", levels)
-      res.status(200).json({levels: levels})
-      break
-    case "POST":
-      const data = [req.body]
-      console.log('recieved data', data)
-    
-      for (const [index, value] of data.entries()) {
-        const question = new Question(value)
-        await question.save()
-        console.log("saved question no.", index+1)
-      }
-      res.status(200)
-      break 
+  let uniqueIdentifier
 
+  switch (req.method) {
+      case "GET":
+        console.log("All questions are: ", levels)
+        res.status(200).json({levels: levels})
+        break
+      case "POST":
+        const data = [req.body]
+        console.log('recieved data', data)
+        
+        for (const [index, value] of data.entries()) {
+          const question = new Question(value)
+          await question.save()
+          console.log("saved question no.", index+1)
+        }
+        res.status(200)
+        break 
+      case "PUT":
+
+        if (req.body.uniqueIdentifier) {
+          uniqueIdentifier = req.body.uniqueIdentifier
+          const {objectifiedData} = req.body
+            
+          const existingQuestion = await Question.findOne({questionId: uniqueIdentifier})
+          const updatedQuestion = await Question.findByIdAndUpdate(existingQuestion._id, objectifiedData, {new: true})
+          console.log("updated question: ", updatedQuestion)
+          res.status(200).send(`updated question: ${updatedQuestion}`)
+        }
+        break
+      case "DELETE":
+        if (req.body.uniqueIdentifier) {
+          uniqueIdentifier = req.body.uniqueIdentifier
+          
+          const questionToDelete = await Question.findOne({questionId: uniqueIdentifier})
+          const question =  await Question.findByIdAndDelete(questionToDelete._id)
+          console.log("question deleted: ", question)
+          res.status(200).send(`question deleted: ${question}`)
+        }
+        break
+      default:
+      res.status(400).send(`KYA KARRA BC METHOD HI GALAT HAI TUMHARA`)
   }
 })
 

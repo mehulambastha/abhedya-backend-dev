@@ -5,28 +5,39 @@ import axios from 'axios'
 import { useRouter } from 'next/navigation'
 import Cookies from 'js-cookie'
 
-
 const ModifyhtmlForm = ({type, dataModal}) => {
-  const token = Cookies.get("token")
   const router = useRouter()
   const [uniqueIdentifier, setUniqueIdentifier] = useState('')
   const [newValue, setNewValue] = useState('')
-
-  const headers = {
-    Authorization: "Bearer " + token
-  }
+  
+  // the source token of axios instance, required to close the instance when reloading the page
+  const source = axios.CancelToken.source()
+  
+  // creating an instance for using axios
+  const token = Cookies.get("token")
+  const axiosInstance = axios.create({
+    baseURL: 'http://localhost:5001/user/superuser/',
+    headers: {
+      'Authorization': "Bearer " + token
+    },
+    cancelToken: source.token
+  })
+  
 
   const handleClickApiRequests = async (dataModal, reqType) => {
-    const objectifiedData = JSON.parse(newValue)
+    alert(`new value: ${newValue}\nIdentifier: ${uniqueIdentifier}`)
+    
+    let objectifiedData = {}
+    if(newValue){
+      objectifiedData = JSON.parse(newValue)
+    }
     // checking the type of request
     switch (reqType) {
-      case 'add':
-        
+      case 'add':        
         // Checking the data model
         if (dataModal === 'users') {
-          
           console.log(objectifiedData)
-          await axios.post('http://localhost:5001/user/register/', objectifiedData)
+          await axios.post('http://localhost:5001/user/register/', objectifiedData, {headers: {'Authorization': 'Bearer ' + token}})
             .then((response) =>{
               response.status===200 ?
                 (alert("registered!"), alert(response.data.msg))
@@ -35,6 +46,8 @@ const ModifyhtmlForm = ({type, dataModal}) => {
 
                 if (response.status===400) {
                   alert(response.data.error)
+                } else if (response.status===404){
+                  alert("nahi mila")
                 }
             })
             .finally(()=> {
@@ -44,37 +57,92 @@ const ModifyhtmlForm = ({type, dataModal}) => {
             
         } else if(dataModal === 'levels') {
           console.log(objectifiedData)
-          await axios.post('http://localhost:5001/user/superuser/levels/', objectifiedData, {headers})
-            .then((response) =>{
-              response.status===200 ?
-                (alert("added level!"), alert(response.data.success))
-                :
-                (alert("maa chud gyi"))
 
-                if (response.status===400) {
-                  alert(response.data.error)
-                }
-            })
-            .finally(()=> {
-              router.refresh() 
-            })
-          
+          try {
+            // using in try catch block 
+            await axiosInstance.post('/levels/', objectifiedData)
+              .then((response) =>{
+                response.status===200 ?
+                  alert("added level!")
+                  :
+                  alert("maa chud gyi")
+
+                  if (response.status===400) {
+                    alert(response.data.error)
+                  } else if (response.status===404){
+                    alert("nahi mila")
+                  }
+              })
+              .finally(()=> {
+                router.refresh() 
+              })
+          } catch (error) {
+            if (axios.isAxiosError(error)) {
+              // The error is an AxiosError (specific to Axios)
+              console.error('Axios Error:', error.message)
+            } else {
+              // Other types of errors
+              console.error('Error:', error.message)   
+            }
+          }    
         }
         break
       case 'modify':
+        // modifying data model
+
+
         // Checking the data model
         if (dataModal === 'users') {
-          alert("user modify")
+          // console.log('identifier: ', uniqueIdentifier)
+          // console.log('newValue: ', newValue)
+
+          await axiosInstance.put("/users/", {uniqueIdentifier, objectifiedData})
+            .then((response) => {
+              alert(response.data)
+            })
+            .finally(()=>{
+              alert("okay")
+            })
         } else {
-          alert("level modify")
+          await axiosInstance.put("/levels/", {uniqueIdentifier, objectifiedData})
+            .then((response) => {
+              alert(response.data)
+            })
+            .finally(()=>{
+              alert("okay")
+            })
         }
         break
       case 'delete':
         // Checking the data model
         if (dataModal === 'users') {
-          alert("user delete")
+          alert("wanna delete??? mmmhmm")
+          alert(`Unique Identifier: ${uniqueIdentifier}\nIts type is: ${typeof(uniqueIdentifier)}`)
+          await axiosInstance.delete("/users/", {
+            data: {
+              uniqueIdentifier: uniqueIdentifier
+            }
+          })
+            .then((response) => {
+              alert("response aagya")
+              alert(response.data)
+            })
+            .finally(()=>{
+              alert("kardiya delete")
+            })
         } else {
-          alert("level delete")
+          alert("wanna delete question??? mmhmhmm")
+          await axiosInstance.delete("/levels/", {
+            data: {
+              uniqueIdentifier: uniqueIdentifier
+            }
+          })
+            .then((response)=>{
+              alert(response.data)
+            })
+            .finally(()=>{
+              alert("kardiya level delete")
+            })
         }
         break
       default:
