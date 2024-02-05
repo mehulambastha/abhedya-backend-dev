@@ -172,16 +172,7 @@ const ModifyhtmlForm = ({type, dataModal}) => {
     )
   } else if (type === 'add') {
     return(
-      <div className='flex self-end flex-col gap-4'>
-        <label htmlFor="body" className='text-gray-500'>Add new (as object)</label>
-        <textarea type="text" name='body'
-          onChange={(e) => setNewValue(e.target.value)}
-          value={newValue}
-        />
-        <button className='bg-blue-500 text-white p-2 rounded-sm'
-          onClick={()=>handleClickApiRequests(dataModal, type)}
-        >Add</button>
-      </div>
+      <div></div>
     )
   } else if (type === 'delete') {
     return(
