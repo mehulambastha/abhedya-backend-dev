@@ -4,6 +4,12 @@ const connection = require('./database/connection');
 const cookieParser = require('cookie-parser');
 const session = require("express-session")
 const cors = require('cors');
+const app = express();
+
+const swaggerUi = require('swagger-ui-express')
+const swaggerFile = require('./swagger-output.json')
+
+app.use('/doc', swaggerUi.serve, swaggerUi.setup(swaggerFile))
 
 const corsOptions = {
   origin: 'http://localhost:3000',
@@ -12,7 +18,6 @@ const corsOptions = {
   optionsSuccessStatus: 204,
 };
 
-const app = express();
 app.use(cors(corsOptions));
 app.use(cookieParser());
 app.use(session({
