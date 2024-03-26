@@ -29,13 +29,18 @@ const submitAnswer = expressAsync(async(req, res, next) => {
     console.log("Wrong Answer! Try again.")
     res.status(400).send("Error wrong answer")
   }else{  
-    const nextLevelInt = user.currentLevelInt + 1    
+    const userCurrentLvl = user.currentLevelInt
+    const nextLevelInt = userCurrentLvl + 1    
+    const currentTimeStamp = Date.now()
+    const timeTakenForThisLevel = currentTimeStamp - user.prevQuestionTimeStamp
+    user.timeCompletedInSeconds.push(timeTakenForThisLevel)
+    await user.save()
     console.log("Correct Answer! You move on to the next question level")
     const updatedUser = await User.findByIdAndUpdate(
       user._id,
       {
         $set: { currentLevelInt: nextLevelInt },
-        $push: { levelsCompleted: nextLevelInt }
+        $push: { levelsCompleted:  userCurrentLvl }
       },
       { new: true } // This option returns the modified document rather than the original one
     );
@@ -49,19 +54,48 @@ const submitAnswer = expressAsync(async(req, res, next) => {
 })
 
 const updateLeaderboard = expressAsync(async(req, res) => {
+  
+  const compareTimes = (userOne, userTwo) => {
+    const userOneTotalTime = userOne.timeCompletedInSeconds.reduce((a,b) => a + b, 0)
+    const userTwoTotalTime = userTwo.timeCompletedInSeconds.reduce((a,b) => a + b, 0)
+
+    if (userTwoTotalTime > userOneTotalTime) {
+      return -1
+    }
+    if (userTwoTotalTime < userOneTotalTime){
+      return 1
+    }
+    return 0
+  }
+
+
   console.log("-------------------------------------------------------Updating Leaderboard--------------------------------\n")
-  const sortedUsers = await User.find().sort({currentLevelInt: -1, timeCompletedInSeconds: 1})
-  res.status(200)
+
+
+  const users = await User.find({startedAbhedya: true}).sort({currentLevelInt: -1})
+  console.log(users)
+
+  console.log('-----------------these were all users-----------------------------')
+
+  users.sort(compareTimes)
+
+  const deadUsers = await User.find({startedAbhedya: false})
+
+  const sortedUsers = [...users, ...deadUsers]
+
+  console.log('Leaderboard: ', sortedUsers)
+
+  res.status(200).json({sortedUsers})
   console.log("updated leaderboard!")
-  console.log(sortedUsers)
+
 })
 
 const insertSampleData = expressAsync(async(req, res) => {
   const data = req.body
   console.log('recieved data')
-  
-  
+
   for (const [index, value] of data.entries()) {
+    console.log('current question is: ', value)
     const question = new Question(value)
     await question.save()
     console.log("saved question no.", index+1)
@@ -69,6 +103,10 @@ const insertSampleData = expressAsync(async(req, res) => {
   res.status(200).json({sucess: "something"})
   
 })
+
+// const leaderBoard = expressAsync(async(req, res) => {
+//   const users = await User.find().sort({currentLevelInt: -1, timeCompletedInSeconds 
+// })
 
 const manageQuestions = expressAsync(async(req, res) => {
   const levels = await Question.find().lean()

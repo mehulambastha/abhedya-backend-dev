@@ -1,10 +1,11 @@
 const express = require('express')
 const router = express.Router()
 
-const {registerUser, validateLinkAndLogin} = require("../controllers/userController")
+const {registerUser, validateLinkAndLogin, userDetails, startAbhedya} = require("../controllers/userController")
 const {superUserController, manageUsers, superUserLogin} = require("../controllers/userController")
 const {manageQuestions} = require("../controllers/gameController")
 const {verifySuperUser} = require("../middleware/verifySuperUser")
+const verifyUser = require("../middleware/verifyUser")
 
 router.route("/register/").post(registerUser)
 router.route("/login/:encryptedUsername/").get(validateLinkAndLogin)
@@ -15,6 +16,8 @@ router.route("/login/:id").get((req, res) => {
 router.route("/register/").get((req, res) => {
   res.status(200).json({msg: "register route hitting"})
 })
+router.route("/get_detail_startedAbhedya/").post(verifyUser, userDetails)
+router.route("/startAbhedya/").post(verifyUser, startAbhedya)
 
 router.route("/superuser/").post(verifySuperUser, superUserController)
 router.route("/superuser/login").post(superUserLogin)

@@ -8,8 +8,7 @@ const verifyUser = expressAsync(async(req, res, next) => {
     console.log("token received: ", token)
     jwt.verify(token, process.env.SECRET, (err, decoded)=>{
       if(err){
-        res.status(400).send("<h1>User not authenticated</h1><h3>Go back to your gmail and click login click again</h3>")
-        throw new Error(err)
+        res.status(400).send("<h1>User not logged in</h1><h3>Go back to your gmail and click login click again</h3>")
       }else{
         console.log("JWT Verified successfully!")
         console.log("Decoded Data: ", decoded)
@@ -19,7 +18,7 @@ const verifyUser = expressAsync(async(req, res, next) => {
       }
     })
   } else{
-    res.status(400).json({AuthenticationError: "User not logged in"})
+    res.status(401).json({AuthenticationError: "User not logged in"})
   }
 
   // If token recieved

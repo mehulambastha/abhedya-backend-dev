@@ -11,14 +11,7 @@ const swaggerFile = require('./swagger-output.json')
 
 app.use('/doc', swaggerUi.serve, swaggerUi.setup(swaggerFile))
 
-const corsOptions = {
-  origin: 'http://localhost:3000',
-  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-  credentials: true,
-  optionsSuccessStatus: 204,
-};
-
-app.use(cors(corsOptions));
+app.use(cors());
 app.use(cookieParser());
 app.use(session({
   secret: "ABD2k24",

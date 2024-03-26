@@ -5,7 +5,8 @@ const verifyUser = require("../middleware/verifyUser")
 
 router.route("/").post(verifyUser, fetchQuestion)
 router.route("/enter").post(insertSampleData)
-router.route("/submit").post(verifyUser, submitAnswer, updateLeaderboard)
+router.route('/leaderboard').get(updateLeaderboard)
+router.route("/submit").post(verifyUser, submitAnswer)
 router.route("/insert").post(insertSampleData)
 
 module.exports = router

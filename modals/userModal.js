@@ -6,6 +6,14 @@ const UserSchema = mongoose.Schema({
     unique: false,
     default: 1
   },
+  firstName: {
+    type: String,
+    unique: false,
+  },
+  lastName: {
+    type: String,
+    unique: false,
+  },
   username: {
     type: String,
     unique: true,
@@ -29,7 +37,24 @@ const UserSchema = mongoose.Schema({
   timeCompletedInSeconds: {
     type: Array,
     unique: false
+  },
+  startedAbhedya: {
+    type: Boolean,
+    default: false,
+  },
+  prevQuestionTimeStamp: {
+    type: Date,
+  },
+  emailSent: {
+    type: Boolean,
+    default: false
+  },
+  loginLink: {
+    type: String,
+    required: false
   }
+}, {
+  timestamps: true
 })
 
 module.exports = mongoose.model("User", UserSchema)
