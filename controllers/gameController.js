@@ -56,6 +56,10 @@ const submitAnswer = expressAsync(async(req, res, next) => {
 const updateLeaderboard = expressAsync(async(req, res) => {
   
   const compareTimes = (userOne, userTwo) => {
+
+    if (userOne.currentLevelInt != userTwo.currentLevelInt) {
+      return userTwo.currentLevelInt - userOne.currentLevelInt
+    }
     const userOneTotalTime = userOne.timeCompletedInSeconds.reduce((a,b) => a + b, 0)
     const userTwoTotalTime = userTwo.timeCompletedInSeconds.reduce((a,b) => a + b, 0)
 
