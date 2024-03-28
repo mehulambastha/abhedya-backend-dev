@@ -37,7 +37,7 @@ const submitAnswer = expressAsync(async(req, res, next) => {
     const timeTakenForThisLevel = currentTimeStamp - user.prevQuestionTimeStamp
     user.timeCompletedInSeconds.push(timeTakenForThisLevel)
     await user.save()
-    console.log("Correct Answer! You move on to the next question level")
+    // console.log("Correct Answer! You move on to the next question level")
     const updatedUser = await User.findByIdAndUpdate(
       user._id,
       {
@@ -46,7 +46,7 @@ const submitAnswer = expressAsync(async(req, res, next) => {
       },
       { new: true } // This option returns the modified document rather than the original one
     );
-    console.log("updated user is: ", updatedUser)
+    // console.log("updated user is: ", updatedUser)
 
     // returning the next question back to the UI
     const nextQuestion = await Question.findOne({level: currentQuestionNumber+1})

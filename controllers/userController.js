@@ -128,9 +128,10 @@ const registerUser = expressAsync(async (req, res) => {
     res.status(400) 
   }
 
-  let possibleUser = await User.findOne({email})
+  let possibleUserByEmail = await User.findOne({email})
+  let possibleUserByUsername = await User.findOne({username})
 
-  if(!possibleUser) {
+  if(!possibleUserByEmail && !possibleUserByUsername) {
     console.log("New user")
     const user = await User({username, email, firstName, lastName, loginLink: encryptedLink})
     console.log('user created')
@@ -138,6 +139,8 @@ const registerUser = expressAsync(async (req, res) => {
     await user.save()
     res.status(200).json({msg: 'registered'})
     console.log(`User ${username} created successfully.`)
+  }else if(possibleUserByUsername) {
+    res.status(421).json({msg: "Username taken"})
   }else{
     console.log("Existing user.")
     res.status(400).json({msg: 'already exists'})
