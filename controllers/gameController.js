@@ -10,11 +10,16 @@ const fetchQuestion = expressAsync(async(req, res) => {
   const username = decodedData.decryptedName
   const user = await User.findOne({username})
   const currentLevel = user.currentLevelInt
-  console.log(`----------------------Current user is----------\n`, user)
-  console.log(`----------------------Current level is----------\n`, currentLevel)
-  const question = await Question.findOne({level: user.currentLevelInt})
-  console.log("Question is: ", question)
-  res.status(200).json({question})
+
+  if (currentLevel == 15) {
+    res.status(201).json({msg: 'Completed Abhedya'})
+  } else {
+    console.log(`----------------------Current user is----------\n`, user)
+    console.log(`----------------------Current level is----------\n`, currentLevel)
+    const question = await Question.findOne({level: user.currentLevelInt})
+    console.log("Question is: ", question)
+    res.status(200).json({question})
+  }
 
 })
 
@@ -24,11 +29,8 @@ const submitAnswer = expressAsync(async(req, res, next) => {
   const currentQuestionNumber = user.currentLevelInt
   const question = await Question.findOne({level: currentQuestionNumber})
   const {userAnswer} = req.body
-  
-  if (userAnswer !== question.correctAnswer) {
-    console.log("Wrong Answer! Try again.")
-    res.status(400).send("Error wrong answer")
-  }else{  
+
+  if (await bcrypt.compare(userAnswer, question.correctAnswer)) {
     const userCurrentLvl = user.currentLevelInt
     const nextLevelInt = userCurrentLvl + 1    
     const currentTimeStamp = Date.now()
@@ -50,6 +52,9 @@ const submitAnswer = expressAsync(async(req, res, next) => {
     const nextQuestion = await Question.findOne({level: currentQuestionNumber+1})
     res.status(200).json(nextQuestion ? nextQuestion : question)
     next()
+  }else{  
+    console.log("Wrong Answer! Try again.")
+    res.status(400).send("Error wrong answer")
   } 
 })
 

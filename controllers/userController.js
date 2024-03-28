@@ -100,6 +100,18 @@ const registerUser = expressAsync(async (req, res) => {
   console.log("register user called")
   const {username, email, firstName, lastName} = req.body    
 
+  const emailRegex = (emailToTest) => {
+    // Regular expression pattern for the specified format
+    const pattern = /^[0-9]{2}[a-zA-Z]{3}[0-9]{3}@nith\.ac\.in$/;
+
+    // Test the email against the pattern
+    return pattern.test(emailToTest);
+  }
+
+  if (!emailRegex(email)) {
+    res.status(422).json({err: 'enter college email'})
+  }
+
   const encryptText = (text, key) => {
     const encrypted = CryptoJS.AES.encrypt(text, key);
     return encrypted.toString();

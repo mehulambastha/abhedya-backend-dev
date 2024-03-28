@@ -12,7 +12,7 @@ const QuestionModal = mongoose.Schema({
   },
   questionTitle: {  
     type: String,
-    required: true,
+    required: false,
   },
   questionBody: {
     type: String,
