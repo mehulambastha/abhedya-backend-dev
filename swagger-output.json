@@ -43,6 +43,12 @@
           },
           "400": {
             "description": "Bad Request"
+          },
+          "421": {
+            "description": "Misdirected Request"
+          },
+          "422": {
+            "description": "Unprocessable Entity"
           }
         }
       },
@@ -660,6 +666,12 @@
           },
           "400": {
             "description": "Bad Request"
+          },
+          "421": {
+            "description": "Misdirected Request"
+          },
+          "422": {
+            "description": "Unprocessable Entity"
           }
         }
       },

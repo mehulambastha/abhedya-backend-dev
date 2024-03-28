@@ -110,6 +110,7 @@ const registerUser = expressAsync(async (req, res) => {
 
   if (!emailRegex(email)) {
     res.status(422).json({err: 'enter college email'})
+    return
   }
 
   const encryptText = (text, key) => {
@@ -141,9 +142,11 @@ const registerUser = expressAsync(async (req, res) => {
     console.log(`User ${username} created successfully.`)
   }else if(possibleUserByUsername) {
     res.status(421).json({msg: "Username taken"})
+    return
   }else{
     console.log("Existing user.")
     res.status(400).json({msg: 'already exists'})
+    return
   }
 
 })
