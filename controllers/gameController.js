@@ -11,8 +11,9 @@ const fetchQuestion = expressAsync(async(req, res) => {
   const user = await User.findOne({username})
   const currentLevel = user.currentLevelInt
 
-  if (currentLevel == 15) {
+  if (currentLevel > 15) {
     res.status(201).json({msg: 'Completed Abhedya'})
+    return
   } else {
     console.log(`----------------------Current user is----------\n`, user)
     console.log(`----------------------Current level is----------\n`, currentLevel)
@@ -31,7 +32,7 @@ const submitAnswer = expressAsync(async(req, res, next) => {
   const {userAnswer} = req.body
 
   if (await bcrypt.compare(userAnswer, question.correctAnswer)) {
-    if (currentQuestionNumber > 15) {
+    if (currentQuestionNumber == 15) {
       res.status(201).json({msg: "Completed."})
       return
     }
