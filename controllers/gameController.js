@@ -31,7 +31,7 @@ const submitAnswer = expressAsync(async(req, res, next) => {
   const {userAnswer} = req.body
 
   if (await bcrypt.compare(userAnswer, question.correctAnswer)) {
-    if (currentQuestionNumber == 15) {
+    if (currentQuestionNumber > 15) {
       res.status(201).json({msg: "Completed."})
       return
     }
