@@ -1,13 +1,14 @@
 const express = require('express')
 const router = express.Router()
 
-const {registerUser, validateLinkAndLogin, userDetails, startAbhedya} = require("../controllers/userController")
+const {registerUser, validateLinkAndLogin, userDetails, startAbhedya ,resendLink } = require("../controllers/userController")
 const {superUserController, manageUsers, superUserLogin} = require("../controllers/userController")
 const {manageQuestions} = require("../controllers/gameController")
 const {verifySuperUser} = require("../middleware/verifySuperUser")
 const verifyUser = require("../middleware/verifyUser")
 
 router.route("/register/").post(registerUser)
+router.route("/resend/").post(resendLink)
 router.route("/login/:encryptedUsername/").get(validateLinkAndLogin)
 router.route("/login/:id").get((req, res) => {
   const id = req.params.id

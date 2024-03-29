@@ -198,6 +198,25 @@ const startAbhedya = expressAsync(async (req, res) => {
 
 })
 
+const resendLink = expressAsync(async(req,res)=>{
+  const {email}=req.body
+  console.log(email);
+ 
+  const currentUser= await User.findOne({email});
+  
+  if(currentUser){
+  const change = await User.findOneAndUpdate({email:email},{emailSent:false})
+  res.status(200).json({msg:"Successfylly sent email"})
+  console.log(change.emailSent);
+  }
+  else{
+    res.status(402).json({Err:"User not found"})
+  }
+
+  
+})
+
+
 const userDetails = expressAsync(async(req, res) => {
   const decodedData = res.locals.decoded //coming from the middleware. Contains username and iat.
   const username = decodedData.decryptedName
@@ -211,4 +230,4 @@ const userDetails = expressAsync(async(req, res) => {
 })
 
 
-module.exports = {startAbhedya, registerUser, validateLinkAndLogin, superUserController, manageUsers, superUserLogin, userDetails}
+module.exports = {startAbhedya, registerUser, validateLinkAndLogin, superUserController, manageUsers, superUserLogin, userDetails ,resendLink}
