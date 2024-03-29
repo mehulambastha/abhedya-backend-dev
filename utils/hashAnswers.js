@@ -1,10 +1,14 @@
 const fs = require('fs');
 const bcrypt = require('bcrypt');
 
+console.log('hi')
+
 let updatedJson = []
-fs.readFileSync('questions.json', 'utf8', (err, file) => {
+console.log('initialized json, ' ,updatedJson)
+  fs.readFile('questions.json', 'utf-8', (err, file) => {
   const data = JSON.parse(file)
 
+  console.log('reading')
 
   data.forEach((question, index) => {
     try {

@@ -1,3 +1,5 @@
 node_modules
 ./fronted/node_modules/
 .env
+./utils/questions.json
+./utils/updatedData.json
