@@ -1,5 +1,4 @@
 # Backend for Abhedya - 2024
-with a simple makeshift frontend to demontrate the API requests
 
 ## 1. Clone the repo
 ```bash
