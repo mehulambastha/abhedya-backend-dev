@@ -34,6 +34,11 @@ const submitAnswer = expressAsync(async(req, res, next) => {
   if (await bcrypt.compare(userAnswer, question.correctAnswer)) {
     if (currentQuestionNumber == 15) {
       res.status(201).json({msg: "Completed."})
+      user.currentLevelInt = 16
+      const currentTimeStamp = Date.now()
+      const timeTakenForThisLevel = currentTimeStamp - user.prevQuestionTimeStamp
+      user.timeCompletedInSeconds.push(timeTakenForThisLevel)
+      await user.save()
       return
     }
     const userCurrentLvl = user.currentLevelInt
