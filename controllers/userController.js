@@ -146,7 +146,7 @@ const registerUser = expressAsync(async (req, res) => {
   }else{
     console.log("Existing user.")
     res.status(400).json({msg: 'already exists'})
-    return
+    returnstart
   }
 
 })

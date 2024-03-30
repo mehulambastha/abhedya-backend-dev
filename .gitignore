@@ -1,5 +1,5 @@
 node_modules
-./fronted/node_modules/
+frontend/node_modules/
 .env
-./utils/questions.json
-.utils/updatedData.json
+utils/questions.json
+utils/updatedData.json

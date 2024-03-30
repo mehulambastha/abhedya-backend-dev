@@ -60,7 +60,7 @@ const submitAnswer = expressAsync(async(req, res, next) => {
 
     // returning the next question back to the UI
     const nextQuestion = await Question.findOne({level: currentQuestionNumber+1})
-    res.status(200).json(nextQuestion ? nextQuestion : question)
+    res.status(200).json(nextQuestion)
     next()
   }else{  
     console.log("Wrong Answer! Try again.")
