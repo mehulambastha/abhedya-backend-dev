@@ -5,7 +5,7 @@ const connectToDb = async () => {
     const connect = await mongoose.connect(process.env.CONN)
     console.log(`Connection established ${connect.connection.name} on ${connect.connection.port}`)
   }catch(e){
-    console.log("error connecting to database: ", e)
+    console.log("error hogya: ", e)
   }
 }
 
